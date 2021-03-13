@@ -21,4 +21,8 @@ RUN chmod 755 /home
 
 USER admin
 
+RUN mkdir scripts
+COPY ./scripts scripts
+
+
 ENTRYPOINT ["tail", "-f", "/dev/null"]

@@ -10,8 +10,8 @@ rem realname name: k8stools
 rem Openshift only accepts deployment configs names up to 24 chars long.
 rem THESEARE24CHAR=123456789012345678901234
 set COMPONENT_NAME=k8stools
-set REGISTRY_PREFIX=docker-registry-default.apps.claro.co
-set NAMESPACE=desarrolloem
+set REGISTRY_PREFIX=docker-registry-default.apps
+set NAMESPACE=myns
 
 set FULL_TAG=%REGISTRY_PREFIX%/%NAMESPACE%/%COMPONENT_NAME%
 set AUTH_TOKEN=%1
@@ -20,6 +20,7 @@ echo "Build Image"
 docker build -t %FULL_TAG% .
 
 echo "Run locally"
+docker stop %COMPONENT_NAME%
 docker run --name %COMPONENT_NAME% --rm -d %FULL_TAG%
 
 if defined AUTH_TOKEN (
