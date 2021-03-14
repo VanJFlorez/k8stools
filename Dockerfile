@@ -1,28 +1,18 @@
-FROM openjdk:11-jre-slim
+FROM ubuntu:12.04
 
-RUN useradd -ms /bin/bash admin
+RUN apt-get update && \
+      apt-get -y install sudo
 
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y telnet
-RUN apt-get install -y gnupg
-# Openshift file transfers
-RUN apt-get install -y rsync 
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
 
-RUN echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" \
-        | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-RUN apt-get update
-RUN apt-get install -y mongodb-org-shell
 
 WORKDIR /home
-RUN chown -R admin:admin /home
+RUN chown -R docker:docker /home
 RUN chmod 755 /home
-
-USER admin
 
 RUN mkdir scripts
 COPY ./scripts scripts
 
+USER docker
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]

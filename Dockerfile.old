@@ -1,0 +1,33 @@
+FROM openjdk:11-jre-slim
+
+ARG USER_ID=1001
+ARG GROUP_ID=1001
+
+RUN addgroup --gid $GROUP_ID user
+RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID user
+USER user
+
+RUN apt-get update
+RUN apt-get install -y curl
+RUN apt-get install -y telnet
+RUN apt-get install -y gnupg
+# Openshift file transfers
+RUN apt-get install -y rsync 
+
+RUN echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" \
+        | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+RUN apt-get update
+RUN apt-get install -y mongodb-org-shell
+
+WORKDIR /home
+RUN chown -R user:user /home
+RUN chmod 755 /home
+
+USER user
+
+RUN mkdir scripts
+COPY ./scripts scripts
+
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]
